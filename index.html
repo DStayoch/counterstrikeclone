@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Browser FPS MVP</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+
+    <div id="hud">
+      <div class="stat">
+        <span>Health</span>
+        <strong id="health">100</strong>
+      </div>
+      <div class="stat">
+        <span>Money</span>
+        <strong id="money">$5000</strong>
+      </div>
+      <div class="stat weapon">
+        <span id="weaponName">Pistol</span>
+        <strong id="ammo">12 / 12</strong>
+      </div>
+      <div class="stat">
+        <span>Slot</span>
+        <strong id="slot">1 Rifle</strong>
+      </div>
+      <div class="stat">
+        <span>Round</span>
+        <strong id="enemiesLeft">0</strong>
+      </div>
+      <div class="stat">
+        <span>Score</span>
+        <strong id="score">0</strong>
+      </div>
+      <div class="stat">
+        <span>Grenades</span>
+        <strong id="grenades">3</strong>
+      </div>
+      <div class="stat">
+        <span>T / CT</span>
+        <strong id="teamScore">0 - 0</strong>
+      </div>
+      <div class="stat">
+        <span>Bomb</span>
+        <strong id="bombStatus">Carried</strong>
+      </div>
+    </div>
+
+    <div id="crosshair" aria-hidden="true"></div>
+    <div id="damageOverlay" aria-hidden="true"></div>
+    <div id="scopeOverlay" class="hidden" aria-hidden="true">
+      <div class="scope-ring"></div>
+    </div>
+
+    <div id="scoreboard">
+      <h2>Scoreboard</h2>
+      <div>
+        <span>Score</span>
+        <strong id="boardScore">0</strong>
+      </div>
+      <div>
+        <span>Kills</span>
+        <strong id="kills">0</strong>
+      </div>
+      <div>
+        <span>Headshots</span>
+        <strong id="headshots">0</strong>
+      </div>
+      <div>
+        <span>Terrorists</span>
+        <strong id="alliesLeft">5</strong>
+      </div>
+      <div>
+        <span>Counter-T</span>
+        <strong id="opponentsLeft">5</strong>
+      </div>
+    </div>
+
+    <div id="prompt">
+      <h1>Browser FPS MVP</h1>
+      <p>Click to lock pointer. WASD moves, Space jumps, mouse aims, left click fires, 1 equips rifle, 2 equips bomb, G throws grenades, R reloads, B buys.</p>
+      <button id="startButton">Start</button>
+    </div>
+
+    <div id="buyMenu" class="hidden" aria-label="Buy menu">
+      <header>
+        <h2>Buy Menu</h2>
+        <button id="closeBuy" aria-label="Close buy menu">x</button>
+      </header>
+      <div id="weaponList"></div>
+    </div>
+
+    <div id="message"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="./classic-main.js"></script>
+  </body>
+</html>

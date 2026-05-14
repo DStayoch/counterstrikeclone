@@ -112,6 +112,7 @@ const clock = new THREE.Clock();
 const raycaster = new THREE.Raycaster();
 const keys = {};
 const colliders = [];
+const botColliders = [];
 const shootables = [];
 const walkableStairs = [];
 const walkableSurfaces = [];
@@ -267,19 +268,25 @@ function buildSky() {
 }
 
 function buildMap() {
+  const groundTexture = createGroundTexture();
   const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(90, 90),
-    new THREE.MeshStandardMaterial({ color: 0x4f5048, roughness: 0.96 }),
+    new THREE.MeshStandardMaterial({ map: groundTexture, color: 0xe6e8d8, roughness: 0.98 }),
   );
   floor.rotation.x = -Math.PI / 2;
   floor.receiveShadow = true;
   scene.add(floor);
 
-  const wallMat = new THREE.MeshStandardMaterial({ color: 0x6a6960, roughness: 0.9 });
-  const coverMat = new THREE.MeshStandardMaterial({ color: 0x8a8172, roughness: 0.86 });
-  const concreteMat = new THREE.MeshStandardMaterial({ color: 0x9a968c, roughness: 0.92 });
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0x5f6358, roughness: 0.92 });
+  const coverMat = new THREE.MeshStandardMaterial({ color: 0x7d786b, roughness: 0.88 });
+  const concreteMat = new THREE.MeshStandardMaterial({ color: 0x918f86, roughness: 0.94 });
   const steelMat = new THREE.MeshStandardMaterial({ color: 0x596166, roughness: 0.62, metalness: 0.28 });
+  const coverTrimMat = new THREE.MeshStandardMaterial({ color: 0x3d4c3d, roughness: 0.84 });
+  const coverStripeMat = new THREE.MeshStandardMaterial({ color: 0xb6a458, roughness: 0.72 });
+  const coverDarkMat = new THREE.MeshStandardMaterial({ color: 0x343631, roughness: 0.9 });
   const bombSiteMat = new THREE.MeshBasicMaterial({ color: 0xc9b24a, transparent: true, opacity: 0.28 });
+  const tSpawnMat = new THREE.MeshBasicMaterial({ color: 0xc79a42, transparent: true, opacity: 0.18 });
+  const ctSpawnMat = new THREE.MeshBasicMaterial({ color: 0x4f92c9, transparent: true, opacity: 0.18 });
 
   addBox([0, 2, -45], [90, 4, 1], wallMat);
   addBox([0, 2, 45], [90, 4, 1], wallMat);
@@ -287,41 +294,41 @@ function buildMap() {
   addBox([45, 2, 0], [1, 4, 90], wallMat);
 
   [
-    [[-18, 1.25, -18], [9, 2.5, 3]],
-    [[14, 1.25, -13], [3, 2.5, 11]],
-    [[-8, 1.25, 13], [14, 2.5, 3]],
-    [[22, 1.25, 20], [10, 2.5, 3]],
-    [[-28, 1.25, 23], [3, 2.5, 10]],
-    [[5, 1.1, 5], [4, 2.2, 8]],
-    [[-31, 0.9, -10], [7, 1.8, 2.2]],
-    [[30, 0.9, -3], [2.2, 1.8, 8]],
-    [[-4, 0.75, -29], [10, 1.5, 2]],
-    [[31, 0.75, 31], [9, 1.5, 2]],
-    [[-14, 2.4, 29], [10, 4.8, 2.4]],
-    [[14, 2.1, 30], [2.4, 4.2, 9]],
-    [[-37, 2.2, -30], [7, 4.4, 7]],
-    [[35, 2.8, 13], [5, 5.6, 5]],
-    [[-36, 1.05, 13], [12, 2.1, 2.4]],
-    [[36, 1.05, -13], [12, 2.1, 2.4]],
-    [[-12, 1.2, 0], [3, 2.4, 12]],
-    [[12, 1.2, 0], [3, 2.4, 12]],
-    [[0, 1.35, -8], [9, 2.7, 2.2]],
-    [[0, 1.35, 8], [9, 2.7, 2.2]],
-  ].forEach(([position, size]) => addBox(position, size, coverMat, true, true));
+    [[-23, 1.25, -24], [9, 2.5, 3]],
+    [[20, 1.25, -18], [3, 2.5, 11]],
+    [[-15, 1.25, 18], [14, 2.5, 3]],
+    [[28, 1.25, 25], [10, 2.5, 3]],
+    [[-24, 1.25, 29], [3, 2.5, 10]],
+    [[4, 1.1, 10], [4, 2.2, 8]],
+    [[-35, 0.9, -14], [7, 1.8, 2.2]],
+    [[35, 0.9, -5], [2.2, 1.8, 8]],
+    [[-9, 0.75, -34], [10, 1.5, 2]],
+    [[36, 0.75, 35], [9, 1.5, 2]],
+    [[-15, 2.4, 37], [10, 4.8, 2.4]],
+    [[18, 2.1, 36], [2.4, 4.2, 9]],
+    [[-39, 2.2, -36], [7, 4.4, 7]],
+    [[39, 2.8, 17], [5, 5.6, 5]],
+    [[-39, 1.05, 17], [12, 2.1, 2.4]],
+    [[39, 1.05, -17], [12, 2.1, 2.4]],
+    [[-18, 1.2, -2], [3, 2.4, 12]],
+    [[18, 1.2, 2], [3, 2.4, 12]],
+    [[-3, 1.35, -13], [9, 2.7, 2.2]],
+    [[3, 1.35, 13], [9, 2.7, 2.2]],
+  ].forEach(([position, size], index) => addCoverBox(position, size, index));
 
   [
     [[-18, 3.2, 0], [9, 0.45, 7]],
     [[18, 3.4, -31], [10, 0.45, 6]],
     [[-2, 4.8, 32], [7, 0.45, 7]],
-    [[-34, 1.48, 9.2], [7, 0.42, 5]],
-    [[34, 1.48, -28.4], [7, 0.42, 5]],
-    [[-18, 1.48, -1.6], [7, 0.42, 5]],
-    [[18, 1.48, -33.6], [7, 0.42, 5]],
-    [[-36, 2.4, 16], [9, 0.45, 6]],
-    [[36, 2.4, -16], [9, 0.45, 6]],
-    [[0, 2.9, 0], [11, 0.45, 8]],
-    [[-34, 4.15, 31], [12, 0.5, 9]],
-    [[34, 4.15, -31], [12, 0.5, 9]],
+    [[-39, 1.48, 9.2], [7, 0.42, 5]],
+    [[39, 1.48, -28.4], [7, 0.42, 5]],
+    [[-24, 1.48, -1.6], [7, 0.42, 5]],
+    [[24, 1.48, -33.6], [7, 0.42, 5]],
+    [[-40, 2.4, 20], [9, 0.45, 6]],
+    [[40, 2.4, -20], [9, 0.45, 6]],
+    [[0, 2.9, 4], [11, 0.45, 8]],
+    [[-19, 4.15, 31], [12, 0.5, 9]],
+    [[19, 4.15, -31], [12, 0.5, 9]],
     [[0, 4.05, 22], [21, 0.45, 5]],
     [[0, 5.25, -21], [18, 0.45, 5]],
     [[-20, 5.25, -28], [10, 0.45, 8]],
@@ -329,16 +336,16 @@ function buildMap() {
   ].forEach(([position, size]) => addBox(position, size, steelMat, false, true));
 
   [
-    [[-18, 1.7, 2.9], [0.3, 3.4, 0.3]],
-    [[-22.2, 1.7, -2.9], [0.3, 3.4, 0.3]],
-    [[18, 1.8, -28], [0.3, 3.6, 0.3]],
-    [[22.6, 1.8, -34], [0.3, 3.6, 0.3]],
+    [[-24, 1.7, 2.9], [0.3, 3.4, 0.3]],
+    [[-28.2, 1.7, -2.9], [0.3, 3.4, 0.3]],
+    [[24, 1.8, -28], [0.3, 3.6, 0.3]],
+    [[28.6, 1.8, -34], [0.3, 3.6, 0.3]],
     [[-5, 2.5, 35], [0.3, 5, 0.3]],
     [[1.3, 2.5, 29], [0.3, 5, 0.3]],
-    [[-39, 2.1, 27], [0.42, 4.2, 0.42]],
-    [[-29, 2.1, 35], [0.42, 4.2, 0.42]],
-    [[29, 2.1, -35], [0.42, 4.2, 0.42]],
-    [[39, 2.1, -27], [0.42, 4.2, 0.42]],
+    [[-24, 2.1, 27], [0.42, 4.2, 0.42]],
+    [[-14, 2.1, 35], [0.42, 4.2, 0.42]],
+    [[14, 2.1, -35], [0.42, 4.2, 0.42]],
+    [[24, 2.1, -27], [0.42, 4.2, 0.42]],
     [[-9.5, 2.05, 19.8], [0.38, 4.1, 0.38]],
     [[9.5, 2.05, 24.2], [0.38, 4.1, 0.38]],
     [[-8, 2.65, -23.2], [0.38, 5.3, 0.38]],
@@ -346,31 +353,34 @@ function buildMap() {
   ].forEach(([position, size]) => addBox(position, size, steelMat));
 
   [
-    [[-34, 4.85, 27.2], [7, 1.0, 0.55]],
-    [[-39.5, 4.85, 31], [0.55, 1.0, 6]],
-    [[34, 4.85, -27.2], [7, 1.0, 0.55]],
-    [[39.5, 4.85, -31], [0.55, 1.0, 6]],
+    [[-19, 4.85, 27.2], [7, 1.0, 0.55]],
+    [[-24.5, 4.85, 31], [0.55, 1.0, 6]],
+    [[19, 4.85, -27.2], [7, 1.0, 0.55]],
+    [[24.5, 4.85, -31], [0.55, 1.0, 6]],
     [[0, 4.72, 19.4], [8, 0.9, 0.5]],
     [[-8.4, 4.72, 22], [0.5, 0.9, 4]],
     [[0, 5.92, -18.4], [7, 0.9, 0.5]],
     [[8.4, 5.92, -21], [0.5, 0.9, 4]],
     [[-20, 5.92, -24.2], [5, 0.9, 0.5]],
     [[20, 5.92, 24.2], [5, 0.9, 0.5]],
-  ].forEach(([position, size]) => addBox(position, size, coverMat, true, true));
+  ].forEach(([position, size], index) => addCoverBox(position, size, index + 40));
 
-  addStairs([-34, 0.18, 5], 1);
-  addStairs([34, 0.18, -24], -1);
-  addStairs([-18, 0.18, -6], 1);
-  addStairs([18, 0.18, -38], 1);
-  addStairs([-36, 0.18, 9], 1);
-  addStairs([36, 0.18, -9], -1);
-  addStairs([0, 0.18, -5], 1);
-  addStairs([-34, 0.18, 23], 1, 16, 5.5, 0.23, 0.72);
-  addStairs([34, 0.18, -23], -1, 16, 5.5, 0.23, 0.72);
-  addStairs([-9, 0.18, 14], 1, 15, 4.4, 0.24, 0.68);
-  addStairs([9, 0.18, -14], -1, 20, 4.4, 0.24, 0.68);
-  addStairs([-20, 3.92, -20], -1, 6, 4.2, 0.18, 0.72);
-  addStairs([20, 3.92, 20], 1, 6, 4.2, 0.18, 0.72);
+  addStairs([-39, 0.18, 5], 1);
+  addStairs([39, 0.18, -24], -1);
+  addStairs([-24, 0.18, -6], 1);
+  addStairs([24, 0.18, -38], 1);
+  addStairs([-40, 0.18, 12], 1);
+  addStairs([40, 0.18, -12], -1);
+  addStairs([0, 0.18, -11], 1);
+  addStairs([-19, 0.18, 15.34], 1, 16, 5.5, 0.269, 0.72);
+  addStairs([19, 0.18, -15.34], -1, 16, 5.5, 0.269, 0.72);
+
+  addSpawnPad([-35, 0.045, 33], [18, 0.08, 18], tSpawnMat);
+  addSpawnPad([35, 0.045, -33], [18, 0.08, 18], ctSpawnMat);
+  addStairs([-9, 0.18, 9.64], 1, 15, 4.4, 0.28, 0.68);
+  addStairs([9, 0.18, -10.68], -1, 12, 4.4, 0.465, 0.68);
+  addStairs([-20, 0.18, -15.72], -1, 12, 4.2, 0.465, 0.72);
+  addStairs([20, 0.18, 15.72], 1, 12, 4.2, 0.465, 0.72);
 
   const site = new THREE.Mesh(new THREE.CylinderGeometry(5.2, 5.2, 0.08, 48), bombSiteMat);
   site.position.copy(roundState.bomb.sitePosition);
@@ -379,32 +389,71 @@ function buildMap() {
   roundState.bomb.siteMesh = site;
 
   function addStairs(origin, direction, steps = 6, width = 6, stepHeight = 0.18, stepDepth = 0.72) {
+    const firstStepHeight = 0.36;
+    const firstStepTop = origin[1] + firstStepHeight / 2;
     walkableStairs.push({
       xMin: origin[0] - width / 2,
       xMax: origin[0] + width / 2,
       zMin: Math.min(origin[2], origin[2] + direction * (steps - 1) * stepDepth) - 0.5,
       zMax: Math.max(origin[2], origin[2] + direction * (steps - 1) * stepDepth) + 0.5,
       originZ: origin[2],
-      baseHeight: Math.max(0, origin[1] - stepHeight),
+      baseHeight: firstStepTop,
       direction,
       stepHeight,
       stepDepth,
-      maxHeight: Math.max(0, origin[1] - stepHeight) + (steps - 1) * stepHeight,
+      maxHeight: firstStepTop + (steps - 1) * stepHeight,
     });
 
     for (let i = 0; i < steps; i++) {
       addBox(
         [origin[0], origin[1] + i * stepHeight, origin[2] + direction * i * stepDepth],
-        [width, 0.36 + i * 0.08, stepDepth],
+        [width, firstStepHeight, stepDepth],
         concreteMat,
-        false,
         true,
+        true,
+        false,
       );
+    }
+  }
+
+  function addSpawnPad(position, size, material) {
+    const pad = new THREE.Mesh(new THREE.BoxGeometry(...size), material);
+    pad.position.set(...position);
+    pad.receiveShadow = false;
+    scene.add(pad);
+  }
+
+  function addCoverBox(position, size, index) {
+    addBox(position, size, coverMat, true, true);
+    addCoverDetails(position, size, index);
+  }
+
+  function addCoverDetails(position, size, index) {
+    const [x, y, z] = position;
+    const [w, h, d] = size;
+    const topY = y + h / 2 + 0.012;
+    const bandY = y + Math.min(h * 0.26, 0.55);
+    const longOnX = w >= d;
+    const stripeLength = Math.max(0.9, (longOnX ? w : d) * 0.45);
+    const stripeWidth = 0.045;
+
+    addBox([x, topY, z], [Math.max(0.25, w - 0.2), 0.035, Math.max(0.25, d - 0.2)], coverTrimMat, false, false);
+
+    if (longOnX) {
+      addBox([x, bandY, z - d / 2 - 0.014], [stripeLength, 0.08, stripeWidth], index % 2 ? coverStripeMat : coverDarkMat, false, false);
+      addBox([x, bandY + 0.22, z + d / 2 + 0.014], [stripeLength * 0.65, 0.06, stripeWidth], index % 2 ? coverDarkMat : coverStripeMat, false, false);
+    } else {
+      addBox([x - w / 2 - 0.014, bandY, z], [stripeWidth, 0.08, stripeLength], index % 2 ? coverStripeMat : coverDarkMat, false, false);
+      addBox([x + w / 2 + 0.014, bandY + 0.22, z], [stripeWidth, 0.06, stripeLength * 0.65], index % 2 ? coverDarkMat : coverStripeMat, false, false);
+    }
+
+    if (h > 2.4) {
+      addBox([x, y + h / 2 - 0.42, z], [Math.min(w, 0.5), 0.16, Math.min(d, 0.5)], coverDarkMat, false, false);
     }
   }
 }
 
-function addBox(position, size, material, blocksMovement = true, walkable = false) {
+function addBox(position, size, material, blocksMovement = true, walkable = false, blocksBots = true) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(...size), material);
   mesh.position.set(...position);
   mesh.castShadow = true;
@@ -412,10 +461,12 @@ function addBox(position, size, material, blocksMovement = true, walkable = fals
   scene.add(mesh);
   mesh.updateMatrixWorld();
   const box = new THREE.Box3().setFromObject(mesh);
+  const bottom = position[1] - size[1] / 2;
   const top = position[1] + size[1] / 2;
   if (blocksMovement) {
     colliders.push(box);
-    solidObstacles.push({ box, top });
+    if (blocksBots) botColliders.push(box);
+    solidObstacles.push({ box, bottom, top });
   }
   if (walkable || top <= 1.8) {
     walkableSurfaces.push({
@@ -625,17 +676,37 @@ function buildWeaponModel(key) {
   const accent = new THREE.MeshStandardMaterial({ color: 0xb98a45, roughness: 0.52, metalness: 0.2 });
   const glass = new THREE.MeshStandardMaterial({ color: 0x14242a, roughness: 0.18, metalness: 0.2 });
   const skin = new THREE.MeshStandardMaterial({ color: 0xb98b62, roughness: 0.68 });
+  const matte = new THREE.MeshStandardMaterial({ color: 0x090c0d, roughness: 0.92, metalness: 0.08 });
+  const lightMetal = new THREE.MeshStandardMaterial({ color: 0x7d8788, roughness: 0.36, metalness: 0.55 });
+  const rubber = new THREE.MeshStandardMaterial({ color: 0x080908, roughness: 0.96 });
 
   if (key === "pistol") {
-    gunBox([0, 0, 0], [0.25, 0.18, 0.56], metal);
-    gunBox([0, -0.18, 0.14], [0.18, 0.36, 0.16], grip);
-    weaponParts.mag = gunBox([0, -0.38, 0.14], [0.13, 0.24, 0.12], dark);
-    gunBox([0, 0.1, -0.08], [0.2, 0.08, 0.28], dark);
+    gunBox([0, 0, 0], [0.18, 0.16, 0.56], metal);
+    gunBox([0, 0.08, -0.02], [0.2, 0.07, 0.62], lightMetal);
+    gunBox([0, 0.145, -0.08], [0.15, 0.03, 0.4], matte);
+    gunBox([0, -0.18, 0.14], [0.12, 0.36, 0.14], grip);
+    weaponParts.mag = gunBox([0, -0.38, 0.14], [0.09, 0.24, 0.105], dark);
+    gunBox([0, 0.1, -0.08], [0.145, 0.07, 0.28], dark);
     gunCylinder([0, 0.03, -0.39], 0.045, 0.34, dark);
-    gunBox([0, -0.03, -0.12], [0.12, 0.08, 0.18], accent);
-    gunBox([0, 0.17, 0.12], [0.2, 0.035, 0.08], dark);
-    gunBox([0, 0.17, -0.22], [0.18, 0.035, 0.06], dark);
-    gunBox([-0.13, -0.02, -0.02], [0.035, 0.08, 0.34], dark);
+    gunCylinder([0, 0.032, -0.42], 0.027, 0.4, lightMetal);
+    gunBox([0, -0.03, -0.12], [0.08, 0.07, 0.18], accent);
+    gunBox([0, 0.17, 0.12], [0.135, 0.03, 0.08], dark);
+    gunBox([0, 0.17, -0.22], [0.13, 0.03, 0.06], dark);
+    gunBox([-0.098, -0.02, -0.02], [0.024, 0.075, 0.34], dark);
+    gunBox([0, -0.26, -0.02], [0.15, 0.038, 0.22], matte);
+    gunBox([0, -0.29, 0.02], [0.1, 0.03, 0.12], lightMetal);
+    gunBox([0, -0.5, 0.14], [0.125, 0.048, 0.16], matte);
+    gunBox([0.081, -0.18, 0.14], [0.012, 0.3, 0.11], matte);
+    gunBox([-0.081, -0.18, 0.14], [0.012, 0.3, 0.11], matte);
+    gunBox([0.109, 0.02, 0.11], [0.018, 0.06, 0.08], lightMetal);
+    gunBox([-0.109, 0.02, 0.11], [0.018, 0.06, 0.08], lightMetal);
+    addGunScrews([
+      [-0.106, -0.08, 0.2],
+      [-0.106, -0.22, 0.07],
+      [0.106, -0.08, 0.2],
+      [0.106, -0.22, 0.07],
+    ], 0.012, lightMetal);
+    addGunRail(0, -0.46, 0.05, 0.11, 4, matte, 0.15);
   } else if (key === "bomb") {
     gunBox([0, -0.02, -0.08], [0.44, 0.28, 0.34], dark);
     gunBox([0, 0.15, -0.08], [0.36, 0.1, 0.26], glass);
@@ -643,38 +714,107 @@ function buildWeaponModel(key) {
     gunBox([0.16, -0.18, -0.08], [0.08, 0.18, 0.28], accent);
     gunCylinder([0, 0.0, -0.36], 0.025, 0.36, accent);
   } else if (key === "smg") {
-    gunBox([0, 0, -0.04], [0.28, 0.2, 0.82], metal);
-    gunBox([0, -0.27, 0.02], [0.18, 0.48, 0.18], grip);
-    gunCylinder([0, 0.02, -0.67], 0.052, 0.54, dark);
-    gunBox([0.18, -0.1, -0.02], [0.08, 0.32, 0.16], accent);
-    gunBox([0, -0.1, 0.48], [0.24, 0.12, 0.34], dark);
-    gunBox([0, 0.18, -0.18], [0.22, 0.1, 0.36], glass);
-    weaponParts.mag = gunBox([0, -0.38, -0.16], [0.18, 0.5, 0.16], dark);
-    gunBox([0, 0.18, 0.5], [0.2, 0.08, 0.52], dark);
-    gunCylinder([0.18, 0.02, -0.67], 0.024, 0.5, accent);
+    gunBox([0, 0.0, -0.02], [0.18, 0.18, 0.68], metal);
+    gunBox([0, 0.095, -0.08], [0.205, 0.07, 0.62], matte);
+    gunCylinder([0, 0.065, -0.56], 0.05, 0.5, matte);
+    gunCylinder([0, 0.015, -0.78], 0.04, 0.36, dark);
+    gunCylinder([0, 0.015, -1.0], 0.052, 0.11, matte);
+    gunCylinder([0, 0.015, -1.08], 0.03, 0.1, lightMetal);
+    gunBox([0, -0.21, 0.05], [0.12, 0.42, 0.16], grip);
+    gunBox([0, -0.08, 0.36], [0.16, 0.1, 0.28], dark);
+    gunBox([0, -0.17, -0.34], [0.17, 0.13, 0.34], rubber);
+    gunBox([0, -0.17, -0.55], [0.15, 0.11, 0.16], rubber);
+    gunBox([0.13, -0.08, -0.08], [0.04, 0.26, 0.12], accent);
+    weaponParts.mag = gunBox([0, -0.38, -0.12], [0.105, 0.48, 0.13], dark);
+    gunBox([0, -0.48, -0.16], [0.11, 0.24, 0.13], dark);
+    gunBox([0, -0.62, -0.2], [0.12, 0.05, 0.14], matte);
+    gunBox([0.068, -0.39, -0.12], [0.012, 0.4, 0.09], lightMetal);
+    gunBox([-0.068, -0.39, -0.12], [0.012, 0.4, 0.09], lightMetal);
+    gunBox([0, 0.165, 0.36], [0.14, 0.055, 0.4], dark);
+    gunBox([0, 0.205, -0.33], [0.09, 0.055, 0.05], matte);
+    gunBox([0, 0.205, 0.16], [0.08, 0.07, 0.04], matte);
+    gunBox([0.13, 0.13, -0.42], [0.04, 0.055, 0.2], lightMetal);
+    gunBox([0.16, 0.09, -0.56], [0.07, 0.045, 0.06], lightMetal);
+    gunBox([-0.13, 0.02, 0.1], [0.035, 0.055, 0.22], lightMetal);
+    gunBox([0.13, 0.02, 0.1], [0.035, 0.055, 0.22], lightMetal);
+    gunBox([0, -0.21, -0.25], [0.16, 0.065, 0.18], matte);
+    gunBox([0, -0.255, -0.25], [0.075, 0.035, 0.09], lightMetal);
+    addGunRail(0, 0.205, -0.1, 0.08, 5, matte, 0.135);
+    addGunScrews([
+      [-0.112, 0.04, 0.12],
+      [-0.112, 0.04, -0.26],
+      [0.112, 0.04, 0.12],
+      [0.112, 0.04, -0.26],
+    ], 0.013, lightMetal);
   } else if (key === "rifle") {
     gunBox([0, 0, -0.14], [0.28, 0.2, 1.08], metal);
+    gunBox([0, 0.12, -0.22], [0.34, 0.09, 0.95], matte);
+    gunBox([0, 0.22, -0.42], [0.2, 0.08, 0.62], lightMetal);
     gunBox([0, -0.24, 0.16], [0.2, 0.42, 0.2], grip);
     gunCylinder([0, 0.02, -1.0], 0.045, 0.8, dark);
+    gunCylinder([0, 0.02, -1.44], 0.072, 0.18, matte);
+    gunCylinder([0, 0.02, -1.56], 0.036, 0.14, lightMetal);
     gunBox([0, -0.04, 0.5], [0.24, 0.18, 0.38], accent);
-    gunBox([0, 0.18, -0.2], [0.24, 0.1, 0.5], glass);
+    gunBox([0, 0.18, -0.2], [0.2, 0.055, 0.5], matte);
     gunBox([0, -0.02, 0.82], [0.34, 0.16, 0.32], dark);
+    gunBox([0, -0.03, 1.08], [0.28, 0.14, 0.42], rubber);
+    gunBox([0, -0.04, 1.32], [0.38, 0.2, 0.08], rubber);
     weaponParts.mag = gunBox([0, -0.34, -0.22], [0.18, 0.56, 0.18], dark);
+    gunBox([0.11, -0.34, -0.22], [0.018, 0.48, 0.13], lightMetal);
+    gunBox([-0.11, -0.34, -0.22], [0.018, 0.48, 0.13], lightMetal);
+    gunBox([0, -0.63, -0.22], [0.21, 0.055, 0.19], matte);
     gunBox([0, 0.16, 0.52], [0.24, 0.08, 0.62], dark);
     gunCylinder([0.16, 0.02, -1.0], 0.022, 0.74, accent);
     gunCylinder([-0.16, 0.02, -1.0], 0.022, 0.74, accent);
+    gunBox([0, -0.25, -0.5], [0.26, 0.08, 0.2], matte);
+    gunBox([0, -0.3, -0.5], [0.12, 0.045, 0.12], lightMetal);
+    gunBox([0.21, 0.02, -0.1], [0.06, 0.07, 0.34], lightMetal);
+    gunBox([-0.21, 0.02, -0.1], [0.06, 0.07, 0.34], lightMetal);
+    gunBox([0, 0.31, -0.52], [0.12, 0.09, 0.06], matte);
+    gunBox([0, 0.31, 0.12], [0.11, 0.11, 0.055], matte);
+    addGunRail(0, 0.28, -0.45, 0.09, 9, matte);
+    addGunRail(0, -0.08, -0.72, 0.09, 6, matte);
+    addGunScrews([
+      [-0.2, 0.06, 0.16],
+      [-0.2, 0.06, -0.42],
+      [0.2, 0.06, 0.16],
+      [0.2, 0.06, -0.42],
+    ], 0.019, lightMetal);
   } else {
     gunBox([0, 0, -0.18], [0.24, 0.18, 1.26], metal);
     gunBox([0, -0.22, 0.34], [0.18, 0.42, 0.18], grip);
+    gunBox([0, 0.11, -0.24], [0.3, 0.075, 1.0], matte);
     gunCylinder([0, 0.18, -0.18], 0.14, 0.42, glass);
+    gunCylinder([0, 0.18, -0.18], 0.105, 0.5, matte);
+    gunCylinder([0, 0.18, -0.18], 0.082, 0.54, glass);
+    gunBox([0, 0.18, 0.12], [0.1, 0.18, 0.12], matte);
+    gunBox([0, 0.18, -0.48], [0.1, 0.18, 0.12], matte);
     gunCylinder([0, 0.04, -1.16], 0.038, 1.08, accent);
+    gunCylinder([0, 0.04, -1.74], 0.07, 0.22, matte);
+    gunCylinder([0, 0.04, -1.88], 0.035, 0.12, lightMetal);
     gunBox([0, -0.02, 0.78], [0.34, 0.16, 0.38], dark);
+    gunBox([0, -0.04, 1.1], [0.3, 0.15, 0.48], rubber);
+    gunBox([0, -0.04, 1.38], [0.42, 0.22, 0.08], rubber);
     gunBox([0, 0.18, -0.52], [0.12, 0.09, 0.42], dark);
     gunBox([0, 0.18, -0.18], [0.48, 0.08, 0.08], dark);
     gunBox([0, 0.18, -0.02], [0.08, 0.36, 0.08], dark);
     weaponParts.bolt = gunBox([0.26, 0.12, -0.24], [0.1, 0.08, 0.36], accent);
+    gunBox([0.34, 0.12, -0.43], [0.05, 0.12, 0.08], lightMetal);
     weaponParts.mag = gunBox([0, -0.34, 0.02], [0.18, 0.5, 0.18], grip);
+    gunBox([0.11, -0.34, 0.02], [0.018, 0.42, 0.13], lightMetal);
+    gunBox([-0.11, -0.34, 0.02], [0.018, 0.42, 0.13], lightMetal);
     gunCylinder([0, 0.06, -1.72], 0.055, 0.18, dark);
+    gunBox([0, -0.25, -0.34], [0.23, 0.08, 0.18], matte);
+    gunBox([0, -0.3, -0.34], [0.1, 0.045, 0.1], lightMetal);
+    gunBox([0, 0.32, -0.86], [0.14, 0.08, 0.1], matte);
+    gunBox([0, 0.32, 0.32], [0.14, 0.08, 0.1], matte);
+    addGunRail(0, 0.28, -0.58, 0.09, 8, matte);
+    addGunScrews([
+      [-0.18, 0.05, 0.2],
+      [-0.18, 0.05, -0.56],
+      [0.18, 0.05, 0.2],
+      [0.18, 0.05, -0.56],
+    ], 0.018, lightMetal);
   }
 
   if (key !== "bomb") {
@@ -685,6 +825,18 @@ function buildWeaponModel(key) {
     weaponParts.magHome = weaponParts.mag?.position.clone();
     weaponParts.boltHome = weaponParts.bolt?.position.clone();
   }
+}
+
+function addGunRail(x, y, zStart, spacing, count, material, width = 0.24) {
+  for (let i = 0; i < count; i++) {
+    gunBox([x, y, zStart - i * spacing], [width, 0.035, 0.035], material);
+  }
+}
+
+function addGunScrews(points, radius, material) {
+  points.forEach((point) => {
+    gunCylinder(point, radius, 0.018, material);
+  });
 }
 
 function gunBox(position, size, material) {
@@ -932,12 +1084,13 @@ function shoot() {
   if (hits.length > 0) {
     const hit = hits[0];
     const enemy = hit.object.userData.enemy;
-    if (enemy && enemy.team === "counter") {
+    if (enemy) {
       const multiplier = hit.object.userData.multiplier || 1;
       onBulletImpact = () => {
         if (enemy.state === "dead") return;
         addImpact(hit.point, true);
         damageEnemy(enemy, weapon.damage * multiplier, hit.object.userData.hitZone);
+        if (enemy.team === "terrorist") showMessage("Friendly hit");
       };
     } else {
       onBulletImpact = () => addImpact(hit.point, false);
@@ -1331,7 +1484,7 @@ function explodeGrenade(grenade) {
   explosionEffects.push({ mesh: blast, life: 0.35, maxLife: 0.35 });
 
   enemies.forEach((enemy) => {
-    if (enemy.state === "dead" || enemy.team !== "counter") return;
+    if (enemy.state === "dead") return;
     const enemyCenter = enemy.group.position.clone().add(new THREE.Vector3(0, 1.1, 0));
     const distance = enemyCenter.distanceTo(position);
     if (distance > 8) return;
@@ -1509,6 +1662,67 @@ function disposeObject(object) {
   });
 }
 
+function createGroundTexture() {
+  const textureCanvas = document.createElement("canvas");
+  textureCanvas.width = 512;
+  textureCanvas.height = 512;
+  const ctx = textureCanvas.getContext("2d");
+
+  ctx.fillStyle = "#596647";
+  ctx.fillRect(0, 0, textureCanvas.width, textureCanvas.height);
+
+  for (let i = 0; i < 2200; i++) {
+    const x = Math.random() * textureCanvas.width;
+    const y = Math.random() * textureCanvas.height;
+    const radius = Math.random() * 2.2 + 0.4;
+    const grassTone = Math.random() > 0.5 ? "rgba(91,116,60,0.55)" : "rgba(52,73,45,0.45)";
+    ctx.fillStyle = grassTone;
+    ctx.beginPath();
+    ctx.ellipse(x, y, radius * 0.65, radius, Math.random() * Math.PI, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  for (let i = 0; i < 95; i++) {
+    const x = Math.random() * textureCanvas.width;
+    const y = Math.random() * textureCanvas.height;
+    const radius = Math.random() * 13 + 5;
+    const gradient = ctx.createRadialGradient(x, y, radius * 0.15, x, y, radius);
+    gradient.addColorStop(0, "rgba(128,124,105,0.75)");
+    gradient.addColorStop(0.55, "rgba(103,101,88,0.42)");
+    gradient.addColorStop(1, "rgba(78,91,58,0)");
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.ellipse(x, y, radius * 1.45, radius, Math.random() * Math.PI, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  for (let i = 0; i < 38; i++) {
+    ctx.strokeStyle = "rgba(45,62,39,0.18)";
+    ctx.lineWidth = Math.random() * 2 + 0.7;
+    ctx.beginPath();
+    const startX = Math.random() * textureCanvas.width;
+    const startY = Math.random() * textureCanvas.height;
+    ctx.moveTo(startX, startY);
+    ctx.bezierCurveTo(
+      startX + Math.random() * 90 - 45,
+      startY + Math.random() * 90 - 45,
+      startX + Math.random() * 150 - 75,
+      startY + Math.random() * 150 - 75,
+      startX + Math.random() * 220 - 110,
+      startY + Math.random() * 220 - 110,
+    );
+    ctx.stroke();
+  }
+
+  const texture = new THREE.CanvasTexture(textureCanvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(9, 9);
+  texture.magFilter = THREE.LinearFilter;
+  texture.minFilter = THREE.LinearMipMapLinearFilter;
+  return texture;
+}
+
 function createSkyTexture() {
   const textureCanvas = document.createElement("canvas");
   textureCanvas.width = 16;
@@ -1677,8 +1891,13 @@ function isPlayerBlocked(position) {
   const currentGroundTop = Math.max(0, getGroundHeight(camera.position));
   const currentFeet = camera.position.y - 1.65;
   const nextFeet = position.y - 1.65;
-  return solidObstacles.some(({ box, top }) => {
-    if (currentFeet >= top - 0.12 && nextFeet >= top - 0.42) return false;
+  const bodyBottom = nextFeet + 0.12;
+  const bodyTop = nextFeet + 1.48;
+  return solidObstacles.some(({ box, bottom, top }) => {
+    const verticallyOverlaps = bodyTop > bottom + 0.08 && bodyBottom < top - 0.08;
+    const leavingTop = currentFeet >= top - 0.18 && nextFeet >= top - 0.62;
+    const canStepOnto = top <= currentGroundTop + 1.45 && position.y >= top + 0.78;
+    if (!verticallyOverlaps || leavingTop || canStepOnto) return false;
 
     const sideBuffer = currentFeet >= top - 0.35 ? 0.28 : 0.72;
     const insideXz =
@@ -1688,13 +1907,23 @@ function isPlayerBlocked(position) {
       position.z < box.max.z + sideBuffer;
     if (!insideXz) return false;
 
-    const canStepOnto = top <= currentGroundTop + 1.45 && position.y >= top + 0.78;
-    return !canStepOnto;
+    const currentDistance = distanceToBox2D(camera.position, box);
+    const nextDistance = distanceToBox2D(position, box);
+    if (currentFeet >= top - 0.7 && nextDistance > currentDistance + 0.02) return false;
+
+    return true;
   });
+}
+
+function distanceToBox2D(position, box) {
+  const closestX = THREE.MathUtils.clamp(position.x, box.min.x, box.max.x);
+  const closestZ = THREE.MathUtils.clamp(position.z, box.min.z, box.max.z);
+  return Math.hypot(position.x - closestX, position.z - closestZ);
 }
 
 function getGroundHeight(position) {
   let height = 0;
+  const feetHeight = position.y - 1.65;
 
   for (const stair of walkableStairs) {
     if (
@@ -1705,7 +1934,10 @@ function getGroundHeight(position) {
     ) {
       const progress = Math.abs(position.z - stair.originZ) / stair.stepDepth;
       const stairHeight = stair.baseHeight + progress * stair.stepHeight;
-      height = Math.max(height, Math.min(stair.maxHeight, Math.max(stair.baseHeight, stairHeight)));
+      const clampedStairHeight = Math.min(stair.maxHeight, Math.max(stair.baseHeight, stairHeight));
+      if (clampedStairHeight <= feetHeight + 0.56) {
+        height = Math.max(height, clampedStairHeight);
+      }
     }
   }
 
@@ -1998,7 +2230,7 @@ function getAvoidanceDirection(enemy, direction, distance, destination, now) {
 function getNearbyCoverSteer(position, steerRadius) {
   const steer = new THREE.Vector3();
 
-  colliders.forEach((box) => {
+  botColliders.forEach((box) => {
     const closestX = THREE.MathUtils.clamp(position.x, box.min.x, box.max.x);
     const closestZ = THREE.MathUtils.clamp(position.z, box.min.z, box.max.z);
     const away = new THREE.Vector3(position.x - closestX, 0, position.z - closestZ);
@@ -2048,7 +2280,7 @@ function chooseAvoidDirection(enemy, direction, obstacle, destination, distance)
 
 function getBotBlockingObstacle(position, radius = 0.72) {
   const sample = position.clone().add(new THREE.Vector3(0, 1, 0));
-  return colliders.find((box) => box.distanceToPoint(sample) < radius);
+  return botColliders.find((box) => box.distanceToPoint(sample) < radius);
 }
 
 function isBotPositionClear(position, radius = 0.66) {
@@ -2058,7 +2290,7 @@ function isBotPositionClear(position, radius = 0.66) {
 function getNearestBotObstacle(position, radius) {
   let nearest = null;
 
-  colliders.forEach((box) => {
+  botColliders.forEach((box) => {
     const closestX = THREE.MathUtils.clamp(position.x, box.min.x, box.max.x);
     const closestZ = THREE.MathUtils.clamp(position.z, box.min.z, box.max.z);
     const distance = Math.hypot(position.x - closestX, position.z - closestZ);
@@ -2075,7 +2307,7 @@ function getNearestBotObstacle(position, radius) {
 function getBotClearanceScore(position, radius) {
   let closest = radius;
 
-  colliders.forEach((box) => {
+  botColliders.forEach((box) => {
     const closestX = THREE.MathUtils.clamp(position.x, box.min.x, box.max.x);
     const closestZ = THREE.MathUtils.clamp(position.z, box.min.z, box.max.z);
     closest = Math.min(closest, Math.hypot(position.x - closestX, position.z - closestZ));
@@ -2097,7 +2329,7 @@ function getBotPenetrationCorrection(position, radius) {
   let bestCorrection = null;
   let bestDepth = Infinity;
 
-  colliders.forEach((box) => {
+  botColliders.forEach((box) => {
     const expandedMinX = box.min.x - radius;
     const expandedMaxX = box.max.x + radius;
     const expandedMinZ = box.min.z - radius;

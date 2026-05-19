@@ -751,11 +751,11 @@ function buildWeaponModel(key) {
     gunBox([0, -0.17, -0.34], [0.17, 0.13, 0.34], rubber);
     gunBox([0, -0.17, -0.55], [0.15, 0.11, 0.16], rubber);
     gunBox([0.13, -0.08, -0.08], [0.04, 0.26, 0.12], accent);
-    weaponParts.mag = gunBox([0, -0.36, -0.08], [0.105, 0.52, 0.13], dark);
-    gunBox([0, -0.49, -0.1], [0.11, 0.24, 0.13], dark);
-    gunBox([0, -0.63, -0.12], [0.12, 0.05, 0.14], matte);
-    gunBox([0.068, -0.37, -0.08], [0.012, 0.42, 0.09], lightMetal);
-    gunBox([-0.068, -0.37, -0.08], [0.012, 0.42, 0.09], lightMetal);
+    weaponParts.mag = gunBox([0, -0.36, 0.08], [0.105, 0.52, 0.13], dark);
+    gunBox([0, -0.49, 0.06], [0.11, 0.24, 0.13], dark);
+    gunBox([0, -0.63, 0.04], [0.12, 0.05, 0.14], matte);
+    gunBox([0.068, -0.37, 0.08], [0.012, 0.42, 0.09], lightMetal);
+    gunBox([-0.068, -0.37, 0.08], [0.012, 0.42, 0.09], lightMetal);
     gunBox([0, 0.165, 0.36], [0.14, 0.055, 0.4], dark);
     gunBox([0, 0.205, -0.33], [0.09, 0.055, 0.05], matte);
     gunBox([0, 0.205, 0.16], [0.08, 0.07, 0.04], matte);
@@ -785,10 +785,10 @@ function buildWeaponModel(key) {
     gunBox([0, -0.02, 0.82], [0.34, 0.16, 0.32], dark);
     gunBox([0, -0.03, 1.08], [0.28, 0.14, 0.42], rubber);
     gunBox([0, -0.04, 1.32], [0.38, 0.2, 0.08], rubber);
-    weaponParts.mag = gunBox([0, -0.38, -0.08], [0.18, 0.6, 0.18], dark);
-    gunBox([0.11, -0.38, -0.08], [0.018, 0.5, 0.13], lightMetal);
-    gunBox([-0.11, -0.38, -0.08], [0.018, 0.5, 0.13], lightMetal);
-    gunBox([0, -0.7, -0.08], [0.21, 0.055, 0.19], matte);
+    weaponParts.mag = gunBox([0, -0.38, 0.12], [0.18, 0.6, 0.18], dark);
+    gunBox([0.11, -0.38, 0.12], [0.018, 0.5, 0.13], lightMetal);
+    gunBox([-0.11, -0.38, 0.12], [0.018, 0.5, 0.13], lightMetal);
+    gunBox([0, -0.7, 0.12], [0.21, 0.055, 0.19], matte);
     gunBox([0, 0.16, 0.52], [0.24, 0.08, 0.62], dark);
     gunCylinder([0.16, 0.02, -1.0], 0.022, 0.74, accent);
     gunCylinder([-0.16, 0.02, -1.0], 0.022, 0.74, accent);
@@ -826,9 +826,9 @@ function buildWeaponModel(key) {
     gunBox([0, 0.18, -0.02], [0.08, 0.36, 0.08], dark);
     weaponParts.bolt = gunBox([0.26, 0.12, -0.24], [0.1, 0.08, 0.36], accent);
     gunBox([0.34, 0.12, -0.43], [0.05, 0.12, 0.08], lightMetal);
-    weaponParts.mag = gunBox([0, -0.38, 0.02], [0.18, 0.54, 0.18], grip);
-    gunBox([0.11, -0.38, 0.02], [0.018, 0.44, 0.13], lightMetal);
-    gunBox([-0.11, -0.38, 0.02], [0.018, 0.44, 0.13], lightMetal);
+    weaponParts.mag = gunBox([0, -0.38, 0.2], [0.18, 0.54, 0.18], grip);
+    gunBox([0.11, -0.38, 0.2], [0.018, 0.44, 0.13], lightMetal);
+    gunBox([-0.11, -0.38, 0.2], [0.018, 0.44, 0.13], lightMetal);
     gunCylinder([0, 0.06, -1.72], 0.055, 0.18, dark);
     gunBox([0, -0.25, -0.34], [0.23, 0.08, 0.18], matte);
     gunBox([0, -0.3, -0.34], [0.1, 0.045, 0.1], lightMetal);
@@ -1001,8 +1001,8 @@ function createThirdPersonRifleModel(parent, materials) {
   addBox([0, -0.06, 0.54], [0.26, 0.13, 0.28], materials.dark);
   addBox([0, -0.05, 0.78], [0.22, 0.12, 0.32], materials.rubber);
   addBox([0, -0.06, 0.96], [0.3, 0.16, 0.07], materials.rubber);
-  addBox([0, -0.3, -0.04], [0.14, 0.44, 0.14], materials.matte);
-  addBox([0, -0.55, -0.04], [0.16, 0.045, 0.15], materials.dark);
+  addBox([0, -0.3, 0.12], [0.14, 0.44, 0.14], materials.matte);
+  addBox([0, -0.55, 0.12], [0.16, 0.045, 0.15], materials.dark);
   addBox([0.15, 0.02, -0.42], [0.035, 0.05, 0.34], materials.accent);
   addBox([-0.15, 0.02, -0.42], [0.035, 0.05, 0.34], materials.accent);
 
@@ -1752,9 +1752,16 @@ function updateReloadAnimation() {
 
   if (weaponParts.freshMag) {
     weaponParts.freshMag.visible = progress >= 0.28 && progress < 0.88;
-    const belt = new THREE.Vector3(-0.36, -1.02, 0.2);
-    const ready = magHome.clone().add(new THREE.Vector3(-0.12, -0.32, 0.08));
-    const inserted = magHome.clone().add(new THREE.Vector3(0, -0.06, 0.02));
+    const pistolReload = reloadAnimation.weaponKey === "pistol";
+    const belt = pistolReload
+      ? new THREE.Vector3(-0.34, -1.0, 0.28)
+      : new THREE.Vector3(-0.38, -1.02, 0.38);
+    const ready = magHome.clone().add(pistolReload
+      ? new THREE.Vector3(-0.12, -0.3, 0.04)
+      : new THREE.Vector3(-0.16, -0.32, 0.02));
+    const inserted = magHome.clone().add(pistolReload
+      ? new THREE.Vector3(0, -0.05, 0.01)
+      : new THREE.Vector3(0, -0.05, 0));
     const firstLeg = belt.clone().lerp(ready, grab);
     const secondLeg = ready.clone().lerp(inserted, insert);
     weaponParts.freshMag.position.copy(progress < 0.58 ? firstLeg : secondLeg);
@@ -1771,16 +1778,16 @@ function updateReloadAnimation() {
     );
     const oldMagHand = magHome.clone().add(pistolReload
       ? new THREE.Vector3(-0.1, -0.04, 0.02)
-      : new THREE.Vector3(-0.2, -0.18, 0.08));
+      : new THREE.Vector3(-0.18, -0.18, 0.02));
     const beltHand = pistolReload
       ? new THREE.Vector3(-0.28, -0.74, 0.28)
-      : new THREE.Vector3(-0.46, -0.92, 0.28);
+      : new THREE.Vector3(-0.46, -0.92, 0.42);
     const newMagHand = magHome.clone().add(pistolReload
       ? new THREE.Vector3(-0.09, -0.08, 0.02)
-      : new THREE.Vector3(-0.16, -0.24, 0.1));
+      : new THREE.Vector3(-0.14, -0.24, 0.02));
     const seatHand = magHome.clone().add(pistolReload
       ? new THREE.Vector3(-0.04, 0.02, 0)
-      : new THREE.Vector3(-0.08, -0.02, 0.04));
+      : new THREE.Vector3(-0.06, -0.02, 0));
     const reachOldMag = smoothRange(progress, 0.02, 0.2);
     const pullOldMag = smoothRange(progress, 0.14, 0.36);
     const grabFreshMag = smoothRange(progress, 0.34, 0.55);

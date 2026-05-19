@@ -593,6 +593,8 @@ function spawnHumanoid(position, index, team = "enemy") {
     avoidUntil: 0,
     avoidDirection: new THREE.Vector3(),
     avoidObstacle: null,
+    facingYaw: group.rotation.y,
+    moveDirection: new THREE.Vector3(0, 0, -1),
     lastMovePosition: group.position.clone(),
     stuckTime: 0,
     originalMaterials: new Map(),
@@ -709,7 +711,7 @@ function buildWeaponModel(key) {
     gunBox([0, 0.08, -0.02], [0.2, 0.07, 0.62], lightMetal);
     gunBox([0, 0.145, -0.08], [0.15, 0.03, 0.4], matte);
     gunBox([0, -0.18, 0.14], [0.12, 0.36, 0.14], grip);
-    weaponParts.mag = gunBox([0, -0.45, 0.28], [0.09, 0.24, 0.105], dark);
+    weaponParts.mag = gunBox([0, -0.3, 0.15], [0.09, 0.28, 0.105], dark);
     gunBox([0, 0.1, -0.08], [0.145, 0.07, 0.28], dark);
     gunCylinder([0, 0.03, -0.39], 0.045, 0.34, dark);
     gunCylinder([0, 0.032, -0.42], 0.027, 0.4, lightMetal);
@@ -719,9 +721,9 @@ function buildWeaponModel(key) {
     gunBox([-0.098, -0.02, -0.02], [0.024, 0.075, 0.34], dark);
     gunBox([0, -0.26, -0.02], [0.15, 0.038, 0.22], matte);
     gunBox([0, -0.29, 0.02], [0.1, 0.03, 0.12], lightMetal);
-    gunBox([0, -0.57, 0.28], [0.125, 0.048, 0.16], matte);
-    gunBox([0.081, -0.25, 0.28], [0.012, 0.3, 0.11], matte);
-    gunBox([-0.081, -0.25, 0.28], [0.012, 0.3, 0.11], matte);
+    gunBox([0, -0.45, 0.15], [0.125, 0.048, 0.16], matte);
+    gunBox([0.081, -0.15, 0.15], [0.012, 0.28, 0.11], matte);
+    gunBox([-0.081, -0.15, 0.15], [0.012, 0.28, 0.11], matte);
     gunBox([0.109, 0.02, 0.11], [0.018, 0.06, 0.08], lightMetal);
     gunBox([-0.109, 0.02, 0.11], [0.018, 0.06, 0.08], lightMetal);
     addGunScrews([
@@ -749,11 +751,11 @@ function buildWeaponModel(key) {
     gunBox([0, -0.17, -0.34], [0.17, 0.13, 0.34], rubber);
     gunBox([0, -0.17, -0.55], [0.15, 0.11, 0.16], rubber);
     gunBox([0.13, -0.08, -0.08], [0.04, 0.26, 0.12], accent);
-    weaponParts.mag = gunBox([0, -0.5, 0.24], [0.105, 0.48, 0.13], dark);
-    gunBox([0, -0.6, 0.2], [0.11, 0.24, 0.13], dark);
-    gunBox([0, -0.74, 0.16], [0.12, 0.05, 0.14], matte);
-    gunBox([0.068, -0.51, 0.24], [0.012, 0.4, 0.09], lightMetal);
-    gunBox([-0.068, -0.51, 0.24], [0.012, 0.4, 0.09], lightMetal);
+    weaponParts.mag = gunBox([0, -0.36, -0.08], [0.105, 0.52, 0.13], dark);
+    gunBox([0, -0.49, -0.1], [0.11, 0.24, 0.13], dark);
+    gunBox([0, -0.63, -0.12], [0.12, 0.05, 0.14], matte);
+    gunBox([0.068, -0.37, -0.08], [0.012, 0.42, 0.09], lightMetal);
+    gunBox([-0.068, -0.37, -0.08], [0.012, 0.42, 0.09], lightMetal);
     gunBox([0, 0.165, 0.36], [0.14, 0.055, 0.4], dark);
     gunBox([0, 0.205, -0.33], [0.09, 0.055, 0.05], matte);
     gunBox([0, 0.205, 0.16], [0.08, 0.07, 0.04], matte);
@@ -783,10 +785,10 @@ function buildWeaponModel(key) {
     gunBox([0, -0.02, 0.82], [0.34, 0.16, 0.32], dark);
     gunBox([0, -0.03, 1.08], [0.28, 0.14, 0.42], rubber);
     gunBox([0, -0.04, 1.32], [0.38, 0.2, 0.08], rubber);
-    weaponParts.mag = gunBox([0, -0.5, 0.26], [0.18, 0.56, 0.18], dark);
-    gunBox([0.11, -0.5, 0.26], [0.018, 0.48, 0.13], lightMetal);
-    gunBox([-0.11, -0.5, 0.26], [0.018, 0.48, 0.13], lightMetal);
-    gunBox([0, -0.79, 0.26], [0.21, 0.055, 0.19], matte);
+    weaponParts.mag = gunBox([0, -0.38, -0.08], [0.18, 0.6, 0.18], dark);
+    gunBox([0.11, -0.38, -0.08], [0.018, 0.5, 0.13], lightMetal);
+    gunBox([-0.11, -0.38, -0.08], [0.018, 0.5, 0.13], lightMetal);
+    gunBox([0, -0.7, -0.08], [0.21, 0.055, 0.19], matte);
     gunBox([0, 0.16, 0.52], [0.24, 0.08, 0.62], dark);
     gunCylinder([0.16, 0.02, -1.0], 0.022, 0.74, accent);
     gunCylinder([-0.16, 0.02, -1.0], 0.022, 0.74, accent);
@@ -824,9 +826,9 @@ function buildWeaponModel(key) {
     gunBox([0, 0.18, -0.02], [0.08, 0.36, 0.08], dark);
     weaponParts.bolt = gunBox([0.26, 0.12, -0.24], [0.1, 0.08, 0.36], accent);
     gunBox([0.34, 0.12, -0.43], [0.05, 0.12, 0.08], lightMetal);
-    weaponParts.mag = gunBox([0, -0.48, 0.38], [0.18, 0.5, 0.18], grip);
-    gunBox([0.11, -0.48, 0.38], [0.018, 0.42, 0.13], lightMetal);
-    gunBox([-0.11, -0.48, 0.38], [0.018, 0.42, 0.13], lightMetal);
+    weaponParts.mag = gunBox([0, -0.38, 0.02], [0.18, 0.54, 0.18], grip);
+    gunBox([0.11, -0.38, 0.02], [0.018, 0.44, 0.13], lightMetal);
+    gunBox([-0.11, -0.38, 0.02], [0.018, 0.44, 0.13], lightMetal);
     gunCylinder([0, 0.06, -1.72], 0.055, 0.18, dark);
     gunBox([0, -0.25, -0.34], [0.23, 0.08, 0.18], matte);
     gunBox([0, -0.3, -0.34], [0.1, 0.045, 0.1], lightMetal);
@@ -999,8 +1001,8 @@ function createThirdPersonRifleModel(parent, materials) {
   addBox([0, -0.06, 0.54], [0.26, 0.13, 0.28], materials.dark);
   addBox([0, -0.05, 0.78], [0.22, 0.12, 0.32], materials.rubber);
   addBox([0, -0.06, 0.96], [0.3, 0.16, 0.07], materials.rubber);
-  addBox([0, -0.42, 0.28], [0.14, 0.38, 0.14], materials.matte);
-  addBox([0, -0.65, 0.28], [0.16, 0.045, 0.15], materials.dark);
+  addBox([0, -0.3, -0.04], [0.14, 0.44, 0.14], materials.matte);
+  addBox([0, -0.55, -0.04], [0.16, 0.045, 0.15], materials.dark);
   addBox([0.15, 0.02, -0.42], [0.035, 0.05, 0.34], materials.accent);
   addBox([-0.15, 0.02, -0.42], [0.035, 0.05, 0.34], materials.accent);
 
@@ -2262,7 +2264,7 @@ function updateEnemies(deltaTime, now) {
 
     if (distance < enemy.attackRange && canSeeTarget) {
       enemy.state = "attacking";
-      faceBotToward(enemy, targetPosition);
+      faceBotToward(enemy, targetPosition, deltaTime, 13);
       if (now - enemy.lastShotAt >= enemy.fireRate) {
         enemy.lastShotAt = now;
         enemyShoot(enemy, target);
@@ -2272,7 +2274,7 @@ function updateEnemies(deltaTime, now) {
       const direction = targetPosition.clone().sub(enemy.group.position);
       direction.y = 0;
       direction.normalize();
-      faceBotToward(enemy, targetPosition);
+      faceBotToward(enemy, targetPosition, deltaTime, 9);
       moveEnemy(enemy, direction, enemy.speed * deltaTime, deltaTime, targetPosition);
     } else {
       enemy.state = "roaming";
@@ -2355,8 +2357,25 @@ function roamEnemy(enemy, deltaTime) {
   moveEnemy(enemy, toTarget, enemy.speed * 0.78 * deltaTime, deltaTime, enemy.roamTarget);
 }
 
-function faceBotToward(bot, targetPosition) {
-  bot.group.lookAt(targetPosition.x, bot.group.position.y, targetPosition.z);
+function faceBotToward(bot, targetPosition, deltaTime = 1 / 60, turnRate = 8) {
+  const dx = targetPosition.x - bot.group.position.x;
+  const dz = targetPosition.z - bot.group.position.z;
+  if (Math.abs(dx) + Math.abs(dz) < 0.001) return;
+
+  const targetYaw = normalizeAngle(Math.atan2(dx, dz) + Math.PI);
+  const currentYaw = Number.isFinite(bot.facingYaw) ? bot.facingYaw : bot.group.rotation.y;
+  const turnAmount = clampAngle(targetYaw - currentYaw);
+  const maxTurn = Math.max(0.02, turnRate * deltaTime);
+  bot.facingYaw = normalizeAngle(currentYaw + THREE.MathUtils.clamp(turnAmount, -maxTurn, maxTurn));
+  bot.group.rotation.y = bot.facingYaw;
+}
+
+function normalizeAngle(angle) {
+  return THREE.MathUtils.euclideanModulo(angle + Math.PI, Math.PI * 2) - Math.PI;
+}
+
+function clampAngle(angle) {
+  return normalizeAngle(angle);
 }
 
 function moveEnemy(enemy, direction, distance, deltaTime, destination = null) {
@@ -2377,9 +2396,10 @@ function moveEnemy(enemy, direction, distance, deltaTime, destination = null) {
 
   travelDirection = chosenStep.direction;
   const lookPoint = enemy.group.position.clone().addScaledVector(travelDirection, 2);
-  faceBotToward(enemy, lookPoint);
+  faceBotToward(enemy, lookPoint, deltaTime, 8);
   enemy.avoidObstacle = null;
   enemy.group.position.copy(chosenStep.position);
+  enemy.moveDirection.copy(travelDirection);
   resolveBotFromCover(enemy, 0.62);
   updateBotStuckState(enemy, deltaTime, direction, distance, destination, now);
   animateEnemy(enemy, deltaTime, chosenStep.distance);
@@ -2426,8 +2446,14 @@ function getBestBotStep(enemy, desiredDirection, originalDirection, distance, de
 
     const destinationScore = destination ? -stepPosition.distanceTo(destination) * 0.025 : 0;
     const forwardScore = candidate.direction.dot(originalDirection) * 1.45;
+    const continuityScore = enemy.moveDirection.lengthSq() > 0.001
+      ? candidate.direction.dot(enemy.moveDirection) * 1.25
+      : 0;
     const clearanceScore = getBotClearanceScore(stepPosition, 2.4);
-    const score = candidate.bias + destinationScore + forwardScore + clearanceScore;
+    const reversalPenalty = enemy.moveDirection.lengthSq() > 0.001 && candidate.direction.dot(enemy.moveDirection) < -0.55
+      ? -1.8
+      : 0;
+    const score = candidate.bias + destinationScore + forwardScore + continuityScore + clearanceScore + reversalPenalty;
 
     if (!best || score > best.score) {
       best = {

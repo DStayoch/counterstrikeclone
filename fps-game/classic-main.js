@@ -857,6 +857,12 @@ function addFirstPersonArms(key, skin, sleeve, glove, grenadeMat, pinMat) {
   const compact = key === "pistol";
   const supportZ = compact ? -0.1 : -0.38;
   const supportY = compact ? -0.32 : -0.22;
+  const leftSleeveHome = compact
+    ? new THREE.Vector3(-0.42, -0.5, 0.08)
+    : new THREE.Vector3(-0.5, -0.24, -0.42);
+  const leftHandHome = compact
+    ? new THREE.Vector3(-0.08, -0.32, 0.08)
+    : new THREE.Vector3(-0.18, -0.18, -0.68);
 
   weaponParts.rightSleeve = gunBox([0.52, -0.54, 0.36], [0.28, 0.22, 0.82], sleeve);
   weaponParts.rightSleeve.rotation.x = 0.66;
@@ -866,13 +872,13 @@ function addFirstPersonArms(key, skin, sleeve, glove, grenadeMat, pinMat) {
   weaponParts.rightThumb = gunBox([0.12, -0.18, compact ? -0.02 : -0.08], [0.09, 0.07, 0.23], skin);
   weaponParts.rightThumb.rotation.z = -0.18;
 
-  weaponParts.leftSleeve = gunBox([compact ? -0.74 : -0.5, compact ? supportY - 0.1 : -0.24, compact ? supportZ + 0.1 : -0.42], [0.28, 0.22, compact ? 0.66 : 0.74], sleeve);
+  weaponParts.leftSleeve = gunBox(leftSleeveHome.toArray(), [0.28, 0.22, compact ? 0.48 : 0.74], sleeve);
   weaponParts.leftSleeve.rotation.x = compact ? 0.5 : 0.72;
   weaponParts.leftSleeve.rotation.z = compact ? 0.5 : 0.42;
-  weaponParts.leftHand = gunBox([compact ? -0.32 : -0.18, compact ? supportY + 0.1 : -0.18, compact ? supportZ - 0.34 : -0.68], [0.27, 0.18, 0.3], glove);
+  weaponParts.leftHand = gunBox(leftHandHome.toArray(), [0.27, 0.18, 0.3], glove);
   weaponParts.leftHand.rotation.x = compact ? 0.02 : 0.08;
-  weaponParts.leftHand.rotation.y = compact ? -0.18 : -0.06;
-  weaponParts.leftHand.rotation.z = compact ? 0.36 : 0.18;
+  weaponParts.leftHand.rotation.y = compact ? 0.18 : -0.06;
+  weaponParts.leftHand.rotation.z = compact ? -0.12 : 0.18;
 
   weaponParts.heldGrenade = createViewGrenade(grenadeMat, pinMat);
   weaponParts.heldGrenade.visible = false;
@@ -896,6 +902,12 @@ function setFirstPersonArmPose(key = player.weapon?.key) {
   const compact = key === "pistol";
   const supportZ = compact ? -0.1 : -0.38;
   const supportY = compact ? -0.32 : -0.22;
+  const leftSleeveHome = compact
+    ? new THREE.Vector3(-0.42, -0.5, 0.08)
+    : new THREE.Vector3(-0.5, -0.24, -0.42);
+  const leftHandHome = compact
+    ? new THREE.Vector3(-0.08, -0.32, 0.08)
+    : new THREE.Vector3(-0.18, -0.18, -0.68);
 
   if (weaponParts.rightSleeve) {
     weaponParts.rightSleeve.position.set(0.52, -0.54, 0.36);
@@ -910,12 +922,12 @@ function setFirstPersonArmPose(key = player.weapon?.key) {
     weaponParts.rightThumb.rotation.set(0, 0, -0.18);
   }
   if (weaponParts.leftSleeve) {
-    weaponParts.leftSleeve.position.set(compact ? -0.74 : -0.5, compact ? supportY - 0.1 : -0.24, compact ? supportZ + 0.1 : -0.42);
-    weaponParts.leftSleeve.rotation.set(compact ? 0.5 : 0.66, compact ? -0.04 : -0.02, compact ? 0.5 : 0.32);
+    weaponParts.leftSleeve.position.copy(leftSleeveHome);
+    weaponParts.leftSleeve.rotation.set(compact ? 0.5 : 0.66, compact ? 0.1 : -0.02, compact ? -0.08 : 0.32);
   }
   if (weaponParts.leftHand) {
-    weaponParts.leftHand.position.set(compact ? -0.32 : -0.18, compact ? supportY + 0.1 : -0.18, compact ? supportZ - 0.34 : -0.68);
-    weaponParts.leftHand.rotation.set(compact ? 0.02 : 0.08, compact ? -0.18 : -0.06, compact ? 0.36 : 0.18);
+    weaponParts.leftHand.position.copy(leftHandHome);
+    weaponParts.leftHand.rotation.set(compact ? 0.02 : 0.08, compact ? 0.18 : -0.06, compact ? -0.12 : 0.18);
     weaponParts.leftHand.visible = true;
   }
   if (weaponParts.heldGrenade) {
@@ -1749,15 +1761,24 @@ function updateReloadAnimation() {
   }
 
   if (weaponParts.leftHand) {
+    const pistolReload = reloadAnimation.weaponKey === "pistol";
     const supportHand = new THREE.Vector3(
-      reloadAnimation.weaponKey === "pistol" ? -0.32 : -0.18,
-      reloadAnimation.weaponKey === "pistol" ? -0.22 : -0.18,
-      reloadAnimation.weaponKey === "pistol" ? -0.44 : -0.68,
+      pistolReload ? -0.08 : -0.18,
+      pistolReload ? -0.32 : -0.18,
+      pistolReload ? 0.08 : -0.68,
     );
-    const oldMagHand = magHome.clone().add(new THREE.Vector3(-0.2, -0.18, 0.08));
-    const beltHand = new THREE.Vector3(-0.46, -0.92, 0.28);
-    const newMagHand = magHome.clone().add(new THREE.Vector3(-0.16, -0.24, 0.1));
-    const seatHand = magHome.clone().add(new THREE.Vector3(-0.08, -0.02, 0.04));
+    const oldMagHand = magHome.clone().add(pistolReload
+      ? new THREE.Vector3(-0.1, -0.04, 0.02)
+      : new THREE.Vector3(-0.2, -0.18, 0.08));
+    const beltHand = pistolReload
+      ? new THREE.Vector3(-0.28, -0.74, 0.28)
+      : new THREE.Vector3(-0.46, -0.92, 0.28);
+    const newMagHand = magHome.clone().add(pistolReload
+      ? new THREE.Vector3(-0.09, -0.08, 0.02)
+      : new THREE.Vector3(-0.16, -0.24, 0.1));
+    const seatHand = magHome.clone().add(pistolReload
+      ? new THREE.Vector3(-0.04, 0.02, 0)
+      : new THREE.Vector3(-0.08, -0.02, 0.04));
     const reachOldMag = smoothRange(progress, 0.02, 0.2);
     const pullOldMag = smoothRange(progress, 0.14, 0.36);
     const grabFreshMag = smoothRange(progress, 0.34, 0.55);
@@ -1767,15 +1788,17 @@ function updateReloadAnimation() {
       ? supportHand.clone().lerp(oldMagHand, reachOldMag).lerp(beltHand, pullOldMag)
       : beltHand.clone().lerp(newMagHand, grabFreshMag).lerp(seatHand, seatFreshMag);
     weaponParts.leftHand.position.copy(handPosition);
-    weaponParts.leftHand.rotation.x = -0.18 + Math.sin(progress * Math.PI) * 0.52;
-    weaponParts.leftHand.rotation.y = -0.18 + seatFreshMag * 0.2;
-    weaponParts.leftHand.rotation.z = -0.36 + seatFreshMag * 0.3;
+    weaponParts.leftHand.rotation.x = (pistolReload ? -0.04 : -0.18) + Math.sin(progress * Math.PI) * (pistolReload ? 0.32 : 0.52);
+    weaponParts.leftHand.rotation.y = (pistolReload ? 0.12 : -0.18) + seatFreshMag * 0.2;
+    weaponParts.leftHand.rotation.z = (pistolReload ? -0.18 : -0.36) + seatFreshMag * 0.3;
 
     if (weaponParts.leftSleeve) {
-      weaponParts.leftSleeve.position.copy(handPosition).add(new THREE.Vector3(-0.28, -0.1, 0.22));
-      weaponParts.leftSleeve.rotation.x = 0.72 + Math.sin(progress * Math.PI) * 0.22;
-      weaponParts.leftSleeve.rotation.y = -0.1;
-      weaponParts.leftSleeve.rotation.z = -0.2;
+      weaponParts.leftSleeve.position.copy(handPosition).add(pistolReload
+        ? new THREE.Vector3(-0.28, -0.12, 0.08)
+        : new THREE.Vector3(-0.28, -0.1, 0.22));
+      weaponParts.leftSleeve.rotation.x = (pistolReload ? 0.48 : 0.72) + Math.sin(progress * Math.PI) * 0.22;
+      weaponParts.leftSleeve.rotation.y = pistolReload ? 0.08 : -0.1;
+      weaponParts.leftSleeve.rotation.z = pistolReload ? -0.08 : -0.2;
     }
   }
 
@@ -1829,13 +1852,15 @@ function updateGrenadeThrowAnimation() {
   weaponRig.rotation.z += 0.12 * draw - 0.18 * throwForward;
 
   if (weaponParts.leftSleeve) {
-    const sleeveHome = new THREE.Vector3(compact ? -0.74 : -0.5, compact ? supportY - 0.1 : -0.24, compact ? supportZ + 0.1 : -0.42);
+    const sleeveHome = compact
+      ? new THREE.Vector3(-0.42, -0.5, 0.08)
+      : new THREE.Vector3(-0.5, -0.24, -0.42);
     const sleeveDraw = new THREE.Vector3(-0.72, -0.9, 0.34);
     const sleeveThrow = new THREE.Vector3(-0.36, -0.08, -0.94);
     const drawnSleeve = sleeveHome.clone().lerp(sleeveDraw, draw);
     const thrownSleeve = sleeveDraw.clone().lerp(sleeveThrow, throwForward);
     weaponParts.leftSleeve.position.copy((progress < 0.25 ? drawnSleeve : thrownSleeve).lerp(sleeveHome, recover));
-    const sleeveHomeRot = { x: compact ? 0.5 : 0.66, y: compact ? -0.04 : -0.08, z: compact ? 0.5 : 0.42 };
+    const sleeveHomeRot = { x: compact ? 0.5 : 0.66, y: compact ? 0.1 : -0.08, z: compact ? -0.08 : 0.42 };
     const sleeveDrawRot = { x: 1.35, y: -0.38, z: -0.7 };
     const sleeveThrowRot = { x: -1.08, y: 0.22, z: 0.46 };
     const sleeveFrom = progress < 0.25 ? sleeveHomeRot : sleeveDrawRot;
@@ -1847,13 +1872,15 @@ function updateGrenadeThrowAnimation() {
   }
 
   if (weaponParts.leftHand) {
-    const handHome = new THREE.Vector3(compact ? -0.32 : -0.18, compact ? supportY + 0.1 : -0.18, compact ? supportZ - 0.34 : -0.68);
+    const handHome = compact
+      ? new THREE.Vector3(-0.08, -0.32, 0.08)
+      : new THREE.Vector3(-0.18, -0.18, -0.68);
     const handDraw = new THREE.Vector3(-0.5, -0.78, 0.28);
     const handThrow = new THREE.Vector3(-0.16, -0.02, -1.08);
     const drawnHand = handHome.clone().lerp(handDraw, draw);
     const thrownHand = handDraw.clone().lerp(handThrow, throwForward);
     weaponParts.leftHand.position.copy((progress < 0.25 ? drawnHand : thrownHand).lerp(handHome, recover));
-    const handHomeRot = { x: compact ? 0.02 : 0.08, y: compact ? -0.18 : -0.06, z: compact ? 0.36 : 0.18 };
+    const handHomeRot = { x: compact ? 0.02 : 0.08, y: compact ? 0.18 : -0.06, z: compact ? -0.12 : 0.18 };
     const handDrawRot = { x: 1.08, y: -0.48, z: -0.58 };
     const handThrowRot = { x: -1.22, y: 0.3, z: 0.76 };
     const handFrom = progress < 0.25 ? handHomeRot : handDrawRot;

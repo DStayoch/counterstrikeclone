@@ -3,12 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="refresh" content="0; url=./fps-game/?v=mag-placement-20260519-10" />
+    <meta http-equiv="Cache-Control" content="no-store, max-age=0" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>Echo Strike</title>
   </head>
   <body>
     <script>
-      window.location.replace("./fps-game/?v=mag-placement-20260519-10");
+      const build = "pages-autodeploy-20260519-11";
+      window.location.replace(`./fps-game/?v=${encodeURIComponent(`${build}-${Date.now()}`)}`);
     </script>
+    <noscript>
+      <a href="./fps-game/?v=pages-autodeploy-20260519-11">Open Echo Strike</a>
+    </noscript>
   </body>
 </html>

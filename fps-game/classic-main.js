@@ -509,24 +509,14 @@ function spawnHumanoid(position, index, team = "enemy") {
   const rightEye = partBox(visual, [0.11, 2.08, -0.337], [0.06, 0.045, 0.025], dark, "head", 3);
   const nose = partBox(visual, [0, 2.01, -0.35], [0.045, 0.09, 0.04], skin, "head", 3);
   const mouth = partBox(visual, [0, 1.93, -0.342], [0.18, 0.035, 0.026], dark, "head", 3);
-  const leftArm = partBox(visual, [-0.5, 1.5, -0.16], [0.24, 0.76, 0.24], uniform, "arm", 0.75);
-  const rightArm = partBox(visual, [0.5, 1.48, -0.12], [0.24, 0.76, 0.24], uniform, "arm", 0.75);
-  const leftForearm = partBox(visual, [-0.25, 1.25, -0.68], [0.23, 0.82, 0.23], uniform, "arm", 0.75);
-  const rightForearm = partBox(visual, [0.26, 1.24, -0.66], [0.23, 0.8, 0.23], uniform, "arm", 0.75);
-  const leftHand = partBox(visual, [-0.12, 1.16, -1.08], [0.23, 0.17, 0.27], skin, "arm", 0.75);
-  const rightHand = partBox(visual, [0.27, 1.14, -1.02], [0.23, 0.17, 0.27], skin, "arm", 0.75);
+  const leftArm = partBox(visual, [-0.28, 1.23, -0.72], [0.23, 0.22, 1.16], uniform, "arm", 0.75);
+  const rightArm = partBox(visual, [0.3, 1.21, -0.68], [0.23, 0.22, 1.08], uniform, "arm", 0.75);
   const leftLeg = partBox(visual, [-0.24, 0.42, 0], [0.26, 0.84, 0.28], uniform, "leg", 0.65);
   const rightLeg = partBox(visual, [0.24, 0.42, 0], [0.26, 0.84, 0.28], uniform, "leg", 0.65);
-  leftArm.rotation.x = -0.62;
+  leftArm.rotation.x = -0.12;
   leftArm.rotation.z = -0.18;
-  rightArm.rotation.x = -0.72;
-  rightArm.rotation.z = 0.2;
-  leftForearm.rotation.x = -1.18;
-  leftForearm.rotation.z = 0.2;
-  rightForearm.rotation.x = -1.12;
-  rightForearm.rotation.z = -0.16;
-  leftHand.rotation.x = -1.14;
-  rightHand.rotation.x = -1.06;
+  rightArm.rotation.x = -0.16;
+  rightArm.rotation.z = 0.16;
   const enemyGun = partBox(visual, [0.06, 1.19, -0.98], [0.22, 0.18, 1.26], dark, "arm", 0.75);
   const enemyBarrel = partCylinder(visual, [0.06, 1.19, -1.68], 0.045, 0.5, dark, "arm", 0.75);
 
@@ -542,10 +532,6 @@ function spawnHumanoid(position, index, team = "enemy") {
     mouth,
     leftArm,
     rightArm,
-    leftForearm,
-    rightForearm,
-    leftHand,
-    rightHand,
     leftLeg,
     rightLeg,
     enemyGun,
@@ -568,7 +554,7 @@ function spawnHumanoid(position, index, team = "enemy") {
     patrolAngle: Math.random() * Math.PI * 2,
     roamTarget: randomMapPoint(),
     stride: Math.random() * Math.PI * 2,
-    limbs: { leftArm, rightArm, leftForearm, rightForearm, leftHand, rightHand, leftLeg, rightLeg, enemyGun, enemyBarrel },
+    limbs: { leftArm, rightArm, leftLeg, rightLeg, enemyGun, enemyBarrel },
     ragdollParts: {
       body,
       chestPlate,
@@ -581,10 +567,6 @@ function spawnHumanoid(position, index, team = "enemy") {
       mouth,
       leftArm,
       rightArm,
-      leftForearm,
-      rightForearm,
-      leftHand,
-      rightHand,
       leftLeg,
       rightLeg,
       enemyGun,
@@ -871,9 +853,6 @@ function addFirstPersonArms(key, skin, sleeve, glove, grenadeMat, pinMat) {
   weaponParts.leftSleeve = gunBox([-0.72, supportY - 0.2, supportZ + 0.28], [0.28, 0.22, compact ? 0.76 : 1.02], sleeve);
   weaponParts.leftSleeve.rotation.x = compact ? 0.5 : 0.72;
   weaponParts.leftSleeve.rotation.z = 0.48;
-  weaponParts.leftForearmView = gunBox([-0.42, supportY - 0.02, supportZ - 0.03], [0.24, 0.2, compact ? 0.52 : 0.74], sleeve);
-  weaponParts.leftForearmView.rotation.x = compact ? 0.32 : 0.48;
-  weaponParts.leftForearmView.rotation.z = 0.66;
   weaponParts.leftHand = gunBox([-0.2, supportY + 0.02, supportZ - 0.16], [0.27, 0.18, 0.3], glove);
   weaponParts.leftHand.rotation.x = compact ? 0.04 : 0.12;
   weaponParts.leftHand.rotation.z = 0.28;
@@ -916,11 +895,6 @@ function setFirstPersonArmPose(key = player.weapon?.key) {
   if (weaponParts.leftSleeve) {
     weaponParts.leftSleeve.position.set(-0.72, supportY - 0.2, supportZ + 0.28);
     weaponParts.leftSleeve.rotation.set(compact ? 0.5 : 0.72, 0, 0.48);
-  }
-  if (weaponParts.leftForearmView) {
-    weaponParts.leftForearmView.position.set(-0.42, supportY - 0.02, supportZ - 0.03);
-    weaponParts.leftForearmView.rotation.set(compact ? 0.32 : 0.48, 0, 0.66);
-    weaponParts.leftForearmView.visible = true;
   }
   if (weaponParts.leftHand) {
     weaponParts.leftHand.position.set(-0.2, supportY + 0.02, supportZ - 0.16);
@@ -1785,24 +1759,6 @@ function updateGrenadeThrowAnimation() {
     weaponParts.leftSleeve.rotation.z = THREE.MathUtils.lerp(THREE.MathUtils.lerp(sleeveFrom.z, sleeveTo.z, sleeveT), sleeveHomeRot.z, recover);
   }
 
-  if (weaponParts.leftForearmView) {
-    const forearmHome = new THREE.Vector3(-0.42, supportY - 0.02, supportZ - 0.03);
-    const forearmDraw = new THREE.Vector3(-0.72, -0.4, 0.02);
-    const forearmThrow = new THREE.Vector3(-0.28, -0.06, -0.98);
-    const drawnForearm = forearmHome.clone().lerp(forearmDraw, draw);
-    const thrownForearm = forearmDraw.clone().lerp(forearmThrow, throwForward);
-    weaponParts.leftForearmView.position.copy((progress < 0.25 ? drawnForearm : thrownForearm).lerp(forearmHome, recover));
-    const forearmHomeRot = { x: compact ? 0.32 : 0.48, y: 0, z: 0.66 };
-    const forearmDrawRot = { x: 1.05, y: -0.22, z: -0.3 };
-    const forearmThrowRot = { x: -1.22, y: 0.22, z: 0.82 };
-    const forearmFrom = progress < 0.25 ? forearmHomeRot : forearmDrawRot;
-    const forearmTo = progress < 0.25 ? forearmDrawRot : forearmThrowRot;
-    const forearmT = progress < 0.25 ? draw : throwForward;
-    weaponParts.leftForearmView.rotation.x = THREE.MathUtils.lerp(THREE.MathUtils.lerp(forearmFrom.x, forearmTo.x, forearmT), forearmHomeRot.x, recover);
-    weaponParts.leftForearmView.rotation.y = THREE.MathUtils.lerp(THREE.MathUtils.lerp(forearmFrom.y, forearmTo.y, forearmT), forearmHomeRot.y, recover);
-    weaponParts.leftForearmView.rotation.z = THREE.MathUtils.lerp(THREE.MathUtils.lerp(forearmFrom.z, forearmTo.z, forearmT), forearmHomeRot.z, recover);
-  }
-
   if (weaponParts.leftHand) {
     const handHome = new THREE.Vector3(-0.2, supportY + 0.02, supportZ - 0.16);
     const handDraw = new THREE.Vector3(-0.78, -0.34, 0.14);
@@ -2615,18 +2571,10 @@ function animateEnemy(enemy, deltaTime, distance) {
   const aimLift = enemy.state === "attacking" ? 0.16 : 0;
 
   enemy.group.position.y = enemy.baseY + bob;
-  enemy.limbs.leftArm.rotation.x = -0.7 + swing * 0.06 - aimLift;
-  enemy.limbs.leftArm.rotation.z = -0.36 + swing * 0.04;
-  enemy.limbs.rightArm.rotation.x = -0.74 + swing * 0.05 - aimLift;
-  enemy.limbs.rightArm.rotation.z = 0.32 - swing * 0.04;
-  enemy.limbs.leftForearm.rotation.x = -1.32 + swing * 0.04 - aimLift;
-  enemy.limbs.leftForearm.rotation.z = 0.46 + swing * 0.03;
-  enemy.limbs.rightForearm.rotation.x = -1.24 + swing * 0.04 - aimLift;
-  enemy.limbs.rightForearm.rotation.z = -0.34 - swing * 0.03;
-  enemy.limbs.leftHand.rotation.x = -1.26 - aimLift;
-  enemy.limbs.leftHand.rotation.z = 0.22;
-  enemy.limbs.rightHand.rotation.x = -1.16 - aimLift;
-  enemy.limbs.rightHand.rotation.z = -0.18;
+  enemy.limbs.leftArm.rotation.x = -0.12 + swing * 0.04 - aimLift;
+  enemy.limbs.leftArm.rotation.z = -0.18 + swing * 0.03;
+  enemy.limbs.rightArm.rotation.x = -0.16 + swing * 0.04 - aimLift;
+  enemy.limbs.rightArm.rotation.z = 0.16 - swing * 0.03;
   enemy.limbs.enemyGun.rotation.x = -0.08 - aimLift;
   enemy.limbs.enemyBarrel.rotation.x = Math.PI / 2 - 0.08 - aimLift;
   enemy.limbs.leftLeg.rotation.x = -swing;
@@ -2665,14 +2613,6 @@ function updateDeadEnemies(now) {
     parts.leftArm.rotation.z = THREE.MathUtils.lerp(parts.leftArm.rotation.z, -1.15, collapse);
     parts.rightArm.rotation.x = THREE.MathUtils.lerp(parts.rightArm.rotation.x, 0.75, collapse);
     parts.rightArm.rotation.z = THREE.MathUtils.lerp(parts.rightArm.rotation.z, 1.25, collapse);
-    parts.leftForearm.rotation.x = THREE.MathUtils.lerp(parts.leftForearm.rotation.x, -0.4, collapse);
-    parts.leftForearm.rotation.z = THREE.MathUtils.lerp(parts.leftForearm.rotation.z, -1.35, collapse);
-    parts.rightForearm.rotation.x = THREE.MathUtils.lerp(parts.rightForearm.rotation.x, 0.85, collapse);
-    parts.rightForearm.rotation.z = THREE.MathUtils.lerp(parts.rightForearm.rotation.z, 1.35, collapse);
-    parts.leftHand.rotation.x = THREE.MathUtils.lerp(parts.leftHand.rotation.x, -0.35, collapse);
-    parts.leftHand.rotation.z = THREE.MathUtils.lerp(parts.leftHand.rotation.z, -1.48, collapse);
-    parts.rightHand.rotation.x = THREE.MathUtils.lerp(parts.rightHand.rotation.x, 0.8, collapse);
-    parts.rightHand.rotation.z = THREE.MathUtils.lerp(parts.rightHand.rotation.z, 1.4, collapse);
     parts.leftLeg.rotation.x = THREE.MathUtils.lerp(parts.leftLeg.rotation.x, 0.42, collapse);
     parts.leftLeg.rotation.z = THREE.MathUtils.lerp(parts.leftLeg.rotation.z, -0.45, collapse);
     parts.rightLeg.rotation.x = THREE.MathUtils.lerp(parts.rightLeg.rotation.x, -0.34, collapse);
@@ -2786,7 +2726,9 @@ function respawnPlayer() {
   player.alive = true;
   camera.position.set(0, 1.65, 36);
   prompt.classList.add("hidden");
-  promptTitle.textContent = "Browser FPS MVP";
+  promptTitle.textContent = "Echo Strike";
+  promptTitle.className = "game-title";
+  promptTitle.dataset.text = "Echo Strike";
   promptText.textContent =
     "Click to lock pointer. WASD moves, Space jumps, mouse aims, left click fires, R reloads, B buys.";
   startButton.style.display = "";

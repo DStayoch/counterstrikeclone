@@ -508,6 +508,10 @@ function spawnHumanoid(position, index, team = "enemy") {
   const vest = new THREE.MeshStandardMaterial({ color: team === "terrorist" ? 0x65412d : 0x1f4e7a, roughness: 0.74 });
   const dark = new THREE.MeshStandardMaterial({ color: 0x111615, roughness: 0.7 });
   const visor = new THREE.MeshStandardMaterial({ color: 0x0d1416, roughness: 0.25, metalness: 0.25 });
+  const gunMetal = new THREE.MeshStandardMaterial({ color: 0x4c5658, roughness: 0.48, metalness: 0.35 });
+  const gunMatte = new THREE.MeshStandardMaterial({ color: 0x090c0d, roughness: 0.92, metalness: 0.08 });
+  const gunAccent = new THREE.MeshStandardMaterial({ color: 0xb98a45, roughness: 0.52, metalness: 0.2 });
+  const gunRubber = new THREE.MeshStandardMaterial({ color: 0x080908, roughness: 0.96 });
 
   const body = partBox(visual, [0, 1.2, 0], [0.82, 1.1, 0.42], vest, "torso", 1);
   const chestPlate = partBox(visual, [0, 1.36, -0.24], [0.58, 0.46, 0.08], dark, "torso", 1);
@@ -527,8 +531,13 @@ function spawnHumanoid(position, index, team = "enemy") {
   leftArm.rotation.z = -0.12;
   rightArm.rotation.x = -0.32;
   rightArm.rotation.z = 0.12;
-  const enemyGun = partBox(visual, [0.04, 1.48, -0.84], [0.2, 0.16, 0.92], dark, "arm", 0.75);
-  const enemyBarrel = partCylinder(visual, [0.04, 1.48, -1.36], 0.04, 0.34, dark, "arm", 0.75);
+  const enemyWeapon = createThirdPersonRifleModel(visual, {
+    metal: gunMetal,
+    matte: gunMatte,
+    accent: gunAccent,
+    rubber: gunRubber,
+    dark,
+  });
 
   const parts = [
     body,
@@ -544,8 +553,6 @@ function spawnHumanoid(position, index, team = "enemy") {
     rightArm,
     leftLeg,
     rightLeg,
-    enemyGun,
-    enemyBarrel,
   ];
   const enemy = {
     id: index,
@@ -564,7 +571,7 @@ function spawnHumanoid(position, index, team = "enemy") {
     patrolAngle: Math.random() * Math.PI * 2,
     roamTarget: randomMapPoint(),
     stride: Math.random() * Math.PI * 2,
-    limbs: { leftArm, rightArm, leftLeg, rightLeg, enemyGun, enemyBarrel },
+    limbs: { leftArm, rightArm, leftLeg, rightLeg, enemyWeapon },
     ragdollParts: {
       body,
       chestPlate,
@@ -579,8 +586,7 @@ function spawnHumanoid(position, index, team = "enemy") {
       rightArm,
       leftLeg,
       rightLeg,
-      enemyGun,
-      enemyBarrel,
+      enemyWeapon,
     },
     baseY: 0,
     lastRetargetAt: 0,
@@ -946,6 +952,51 @@ function gunCylinder(position, radius, length, material) {
   mesh.castShadow = false;
   weaponRig.add(mesh);
   return mesh;
+}
+
+function createThirdPersonRifleModel(parent, materials) {
+  const rifle = new THREE.Group();
+  rifle.position.set(0.04, 1.48, -0.84);
+  rifle.rotation.x = -0.18;
+  parent.add(rifle);
+
+  const addBox = (position, size, material) => {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(...size), material.clone());
+    mesh.position.set(...position);
+    mesh.castShadow = true;
+    rifle.add(mesh);
+    return mesh;
+  };
+
+  const addCylinder = (position, radius, length, material) => {
+    const mesh = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, length, 12), material.clone());
+    mesh.rotation.x = Math.PI / 2;
+    mesh.position.set(...position);
+    mesh.castShadow = true;
+    rifle.add(mesh);
+    return mesh;
+  };
+
+  addBox([0, 0, 0], [0.22, 0.16, 0.72], materials.metal);
+  addBox([0, 0.09, -0.06], [0.26, 0.065, 0.62], materials.matte);
+  addBox([0, 0.16, -0.18], [0.16, 0.055, 0.38], materials.dark);
+  addCylinder([0, 0.01, -0.62], 0.04, 0.56, materials.dark);
+  addCylinder([0, 0.01, -0.94], 0.055, 0.12, materials.matte);
+  addCylinder([0, 0.01, -1.02], 0.028, 0.1, materials.accent);
+  addBox([0, -0.18, 0.18], [0.16, 0.3, 0.16], materials.dark);
+  addBox([0, -0.06, 0.54], [0.26, 0.13, 0.28], materials.dark);
+  addBox([0, -0.05, 0.78], [0.22, 0.12, 0.32], materials.rubber);
+  addBox([0, -0.06, 0.96], [0.3, 0.16, 0.07], materials.rubber);
+  addBox([0, -0.28, -0.08], [0.14, 0.38, 0.14], materials.matte);
+  addBox([0, -0.51, -0.08], [0.16, 0.045, 0.15], materials.dark);
+  addBox([0.15, 0.02, -0.42], [0.035, 0.05, 0.34], materials.accent);
+  addBox([-0.15, 0.02, -0.42], [0.035, 0.05, 0.34], materials.accent);
+
+  for (let i = 0; i < 6; i++) {
+    addBox([0, 0.2, -0.38 - i * 0.075], [0.19, 0.025, 0.025], materials.matte);
+  }
+
+  return rifle;
 }
 
 function partBox(group, position, size, material, hitZone, multiplier) {
@@ -2586,8 +2637,7 @@ function animateEnemy(enemy, deltaTime, distance) {
   enemy.limbs.leftArm.rotation.z = -0.12 + swing * 0.025;
   enemy.limbs.rightArm.rotation.x = -0.32 + swing * 0.03 - aimLift;
   enemy.limbs.rightArm.rotation.z = 0.12 - swing * 0.025;
-  enemy.limbs.enemyGun.rotation.x = -0.18 - aimLift;
-  enemy.limbs.enemyBarrel.rotation.x = Math.PI / 2 - 0.18 - aimLift;
+  enemy.limbs.enemyWeapon.rotation.x = -0.18 - aimLift;
   enemy.limbs.leftLeg.rotation.x = -swing;
   enemy.limbs.rightLeg.rotation.x = swing;
 }
@@ -2628,10 +2678,8 @@ function updateDeadEnemies(now) {
     parts.leftLeg.rotation.z = THREE.MathUtils.lerp(parts.leftLeg.rotation.z, -0.45, collapse);
     parts.rightLeg.rotation.x = THREE.MathUtils.lerp(parts.rightLeg.rotation.x, -0.34, collapse);
     parts.rightLeg.rotation.z = THREE.MathUtils.lerp(parts.rightLeg.rotation.z, 0.5, collapse);
-    parts.enemyGun.rotation.x = THREE.MathUtils.lerp(parts.enemyGun.rotation.x, -1.1, collapse);
-    parts.enemyGun.rotation.z = THREE.MathUtils.lerp(parts.enemyGun.rotation.z, 0.75, collapse);
-    parts.enemyBarrel.rotation.x = THREE.MathUtils.lerp(parts.enemyBarrel.rotation.x, Math.PI / 2 - 1.1, collapse);
-    parts.enemyBarrel.rotation.z = THREE.MathUtils.lerp(parts.enemyBarrel.rotation.z, 0.75, collapse);
+    parts.enemyWeapon.rotation.x = THREE.MathUtils.lerp(parts.enemyWeapon.rotation.x, -1.1, collapse);
+    parts.enemyWeapon.rotation.z = THREE.MathUtils.lerp(parts.enemyWeapon.rotation.z, 0.75, collapse);
 
     if (progress >= 1) {
       enemy.group.position.y = settledHeight;

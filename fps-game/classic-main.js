@@ -2362,7 +2362,7 @@ function faceBotToward(bot, targetPosition, deltaTime = 1 / 60, turnRate = 8) {
   const dz = targetPosition.z - bot.group.position.z;
   if (Math.abs(dx) + Math.abs(dz) < 0.001) return;
 
-  const targetYaw = normalizeAngle(Math.atan2(dx, dz) + Math.PI);
+  const targetYaw = normalizeAngle(Math.atan2(dx, dz));
   const currentYaw = Number.isFinite(bot.facingYaw) ? bot.facingYaw : bot.group.rotation.y;
   const turnAmount = clampAngle(targetYaw - currentYaw);
   const maxTurn = Math.max(0.02, turnRate * deltaTime);
